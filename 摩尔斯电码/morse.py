@@ -72,7 +72,7 @@ class Morse:
         """
         对明文进行摩尔斯电码编码操作
         :param plain_text: "你好12345678"
-        :return: "你好.----..---...--....-.....-....--...---.."
+        :return: "你好.---- ..--- ...-- ....- ..... -.... --... ---.."
         """
         morse_encoded = str()
         for char in plain_text.upper():
