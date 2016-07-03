@@ -8,7 +8,7 @@ from itertools import zip_longest
 __author__ = '__L1n__w@tch'
 
 
-class ZhaLan:
+class RailFence:
     """
     栅栏密码, 初始化需要一个栏数, 内含加密操作与解密操作, 以及内置使用的分组操作
     """
@@ -25,7 +25,7 @@ class ZhaLan:
         if len(text_decrypted) % self.num != 0:
             raise RuntimeError("待加密的长度需要是栏数的倍数")
         text_encrypted = str()
-        groups = ZhaLan.__divide_group(text_decrypted, self.num)
+        groups = RailFence.__divide_group(text_decrypted, self.num)
 
         for order in range(self.num):
             for each_group in groups:
@@ -42,7 +42,7 @@ class ZhaLan:
         if len(text_encrypted) % self.num != 0:
             raise RuntimeError("待解密的密文应该是栅栏数的倍数")
         text_decrypted = str()
-        groups = ZhaLan.__divide_group(text_encrypted, len(text_encrypted) // self.num)
+        groups = RailFence.__divide_group(text_encrypted, len(text_encrypted) // self.num)
 
         for order in range(len(text_encrypted) // self.num):
             for each_group in groups:
@@ -68,7 +68,7 @@ class ZhaLan:
 
 if __name__ == "__main__":
     num = 5
-    rail_fence = ZhaLan(num)
+    rail_fence = RailFence(num)
     cipher_text = rail_fence.encrypt("WoShiZhongWenBuShiYingWen")
     plaintext = rail_fence.decrypt(cipher_text)
     print("plaintext = {0}\n{num}-ciphertext = {1}".format(plaintext, cipher_text, num=num))
