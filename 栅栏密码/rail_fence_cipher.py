@@ -69,6 +69,6 @@ class RailFence:
 if __name__ == "__main__":
     num = 5
     rail_fence = RailFence(num)
-    cipher_text = rail_fence.encrypt("WoShiZhongWenBuShiYingWen")
+    cipher_text = rail_fence.encrypt("a" * 5 + "b" * 5 + "c" * 5 + "d" * 5 + "e" * 5)
     plaintext = rail_fence.decrypt(cipher_text)
-    print("plaintext = {0}\n{num}-ciphertext = {1}".format(plaintext, cipher_text, num=num))
+    print("plaintext = {0}\n{num}-cipher_text = {1}".format(plaintext, cipher_text, num=num))
