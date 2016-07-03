@@ -84,6 +84,5 @@ class Morse:
 
 
 if __name__ == "__main__":
-    print(help(Morse))
     print("测试解码: {}".format(Morse.decode_morse("-- --- .-. ... . 你好")))
     print("测试编码: {}".format(Morse.encode_morse("你好12345678")))
