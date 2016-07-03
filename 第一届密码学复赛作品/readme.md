@@ -5,7 +5,7 @@
 代码写的挺一般, 就当拿来学习 tkinter/RSA/AES 吧
 
 ## 代码运行截图
-<img src="hhttps://github.com/L1nwatch/about-cryptography/blob/master/%E7%AC%AC%E4%B8%80%E5%B1%8A%E5%AF%86%E7%A0%81%E5%AD%A6%E5%A4%8D%E8%B5%9B%E4%BD%9C%E5%93%81/run_picture/server.png" width="20%" height="50%">
+<img src="https://github.com/L1nwatch/about-cryptography/blob/master/%E7%AC%AC%E4%B8%80%E5%B1%8A%E5%AF%86%E7%A0%81%E5%AD%A6%E5%A4%8D%E8%B5%9B%E4%BD%9C%E5%93%81/run_picture/server.png" width="20%" height="50%">
 <img src="https://github.com/L1nwatch/about-cryptography/blob/master/%E7%AC%AC%E4%B8%80%E5%B1%8A%E5%AF%86%E7%A0%81%E5%AD%A6%E5%A4%8D%E8%B5%9B%E4%BD%9C%E5%93%81/run_picture/client.png" width="20%" height="50%">
 <img src="https://github.com/L1nwatch/about-cryptography/blob/master/%E7%AC%AC%E4%B8%80%E5%B1%8A%E5%AF%86%E7%A0%81%E5%AD%A6%E5%A4%8D%E8%B5%9B%E4%BD%9C%E5%93%81/run_picture/connect.png" width="50%" height="100%">
 
