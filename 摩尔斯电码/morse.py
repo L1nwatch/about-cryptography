@@ -11,6 +11,9 @@ __author__ = '__L1n__w@tch'
 
 
 class Morse:
+    """
+    摩尔斯电码的类, 包括了映射表, 编码函数与解码函数
+    """
     upper_letters_map = {
         "A": ".-", "B": "-...", "C": "-.-.", "D": "-..",
         "E": ".", "F": "..-.", "G": "--.", "H": "....",
@@ -39,6 +42,11 @@ class Morse:
 
     @staticmethod
     def reverse_map(a_map):
+        """
+        把映射表转换一下, 比如说原来映射关系是 "A":".-", 转换后变成 ".-":"A"
+        :param a_map: {"A": ".-", "B": "-..."}
+        :return: {".-": "A", "-...": "B"}
+        """
         return dict(zip(a_map.values(), a_map.keys()))
 
     @staticmethod
@@ -76,5 +84,6 @@ class Morse:
 
 
 if __name__ == "__main__":
+    print(help(Morse))
     print("测试解码: {}".format(Morse.decode_morse("-- --- .-. ... . 你好")))
     print("测试编码: {}".format(Morse.encode_morse("你好12345678")))
