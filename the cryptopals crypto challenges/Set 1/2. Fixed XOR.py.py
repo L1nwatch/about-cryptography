@@ -38,8 +38,8 @@ def hex_xor2(hex_str1, hex_str2):
     """
     hex_bytes1 = bytes.fromhex(hex_str1)
     hex_bytes2 = bytes.fromhex(hex_str2)
-    xored = bytes([x ^ y for (x, y) in zip(hex_bytes1, hex_bytes2)])
-    return binascii.hexlify(xored)
+    after_xor = bytes([x ^ y for (x, y) in zip(hex_bytes1, hex_bytes2)])
+    return binascii.hexlify(after_xor)
 
 
 if __name__ == "__main__":
