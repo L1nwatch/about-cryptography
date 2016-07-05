@@ -10,6 +10,7 @@
 * Zigzag/rail_fence, 栅栏密码
 * caesar_cipher, 凯撒密码
 * RSA/AES/tkinter(第一次密码学复赛)
+* [the cryptopals crypto challenges](https://cryptopals.com/)，密码学挑战题目
 
 ## 知识来源
 * 密码学课程（coursera，斯坦福大学密码学 I）
