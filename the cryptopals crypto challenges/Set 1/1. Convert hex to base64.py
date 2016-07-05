@@ -33,5 +33,5 @@ if __name__ == "__main__":
     answer = "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t"
     b64_encoded = base64.b64encode(binascii.unhexlify(the_string))  # 方法一使用 binascii 库
     b64_encoded = base64.b64encode(codecs.decode(the_string, "hex"))  # 方法二使用 codecs 库
-    b64_encoded = base64.b64encode(bytes.fromhex(the_string))
+    b64_encoded = base64.b64encode(bytes.fromhex(the_string))  # 方法三使用 bytes.fromhex() 函数
     assert answer.encode("utf8") == b64_encoded
