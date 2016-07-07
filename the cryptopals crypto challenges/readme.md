@@ -7,12 +7,21 @@
 ## 清单
 * Crypto Challenge Set 1
     * 1. Convert hex to base64
+        * 研究十六进制转换成 ascii 再转换成 base64 编码
     * 2. Fixed XOR
+        * 实现 2 个十六进制串的异或
     * 3. Single-byte XOR cipher
+        * 实现一个十六进制串与一个由单字符扩展而成的十六进制串异或
     * 4. Detect single-character XOR
+        * 找出密文中被单字符加密的那一句密文, 并解密出来
+        * 从解密结果中查找解密正确的英文句子(利用空格数量)
     * 5. Implement repeating-key XOR
-    * 6. AES in ECB mode
-    * 7. Detect AES in ECB mode
+        * 与第 3 题以及第 4 题类似, 不过不是单字符, 而是由一个字符串产生的十六进制串
+    * 7. AES in ECB mode
+        * 学习如何使用 AES-ECB 进行加密操作
+    * 8. Detect AES in ECB mode
+        * 尝试破解出 AES-ECB 加密的密文
+        * 利用的是一次密码本攻击(ECB 模式下对同样的明文加密总是产生相同的密文)
 * Crypto Challenge Set 2
     * 9. Implement PKCS#7 padding
     * 10. Implement CBC mode
