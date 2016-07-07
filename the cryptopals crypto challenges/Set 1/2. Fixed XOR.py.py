@@ -12,7 +12,7 @@ If your function works properly, then when you feed it the string:
     746865206b696420646f6e277420706c6179
 
 # 题意
-实现2个十六进制串的异或
+实现 2 个十六进制串的异或
 """
 import binascii
 
