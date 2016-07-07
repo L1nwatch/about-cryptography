@@ -20,7 +20,7 @@
     * 7. AES in ECB mode
         * 学习如何使用 AES-ECB 进行加密操作
     * 8. Detect AES in ECB mode
-        * 尝试破解出 AES-ECB 加密的密文
+        * 找出被 AES-ECB 加密的密文
         * 利用的是一次密码本攻击(ECB 模式下对同样的明文加密总是产生相同的密文)
 * Crypto Challenge Set 2
     * 9. Implement PKCS#7 padding
