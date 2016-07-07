@@ -67,7 +67,7 @@ if __name__ == "__main__":
     block_size = 16 * 2  # 16 字节, 变成十六进制的话应该是 32 长度
 
     # 读取文件内容
-    # 参数'rU'，可以避免 UNIX 和 Windows 下换行符表示不同的问题 (\r\n, \n)
+    # 参数'rU'，可以避免 *NIX 和 Windows 下换行符表示不同的问题 (\r\n, \n)
     with open(file_name, "rU") as f:
         lines = f.readlines()
 
