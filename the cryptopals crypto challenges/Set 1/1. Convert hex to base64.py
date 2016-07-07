@@ -23,6 +23,7 @@ base64_map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
 "I'm killing your brain like a poisonous mushroom"
 
 # 题目总结
+研究十六进制转换成 ascii 再转换成 base64 编码
 """
 import binascii
 import base64
