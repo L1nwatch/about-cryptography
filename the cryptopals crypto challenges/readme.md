@@ -24,6 +24,7 @@
         * 利用的是一次密码本攻击(ECB 模式下对同样的明文加密总是产生相同的密文)
 * Crypto Challenge Set 2
     * 9. Implement PKCS#7 padding
+        * 实现 PKCS#7 填充操作
     * 10. Implement CBC mode
     * 11. An ECB/CBC detection oracle
     * 13. ECB cut-and-paste
