@@ -26,6 +26,7 @@
     * 9. Implement PKCS#7 padding
         * 实现 PKCS#7 填充操作
     * 10. Implement CBC mode
+        * 要求不用密码库手动实现 AES-CBC
     * 11. An ECB/CBC detection oracle
     * 13. ECB cut-and-paste
     * 14. Byte-at-a-time ECB decryption (Harder)
