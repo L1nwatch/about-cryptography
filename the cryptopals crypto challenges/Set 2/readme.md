@@ -1,3 +1,5 @@
+# 网上关于第 10 题的 writeup
+```Python
 def mc_part10():
     raw = crypto_utils.b64_file_to_bytes('p10.txt')  # 没找到这个库，估计是自己自定义的吧
     iv = b'\x00' * 16  # initialisation vector - zero'ed
@@ -24,3 +26,4 @@ def aes_manual_cbc(k, txt, iv, mode=MODE_DECRYPT):
             prev_block = block
 
     return unpad(d)
+```
