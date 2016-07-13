@@ -28,6 +28,8 @@
     * 10. Implement CBC mode
         * 要求不用密码库手动实现 AES-CBC(利用 AES-ECB )
     * 11. An ECB/CBC detection oracle
+        * 随机选择 ECB 或者 CBC 模式进行加密，返回加密所采用的模式以及加密后的结果
+        * 仅给定一段密文，判断是采用 ECB 模式还是使用 CBC 模式进行的加密
     * 13. ECB cut-and-paste
     * 14. Byte-at-a-time ECB decryption (Harder)
     * 15. PKCS#7 padding validation
