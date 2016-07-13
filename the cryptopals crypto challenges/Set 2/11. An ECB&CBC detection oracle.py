@@ -14,7 +14,8 @@ Now, have the function choose to encrypt under ECB 1/2 the time, and under CBC t
 Detect the block cipher mode the function is using each time. You should end up with a piece of code that, pointed at a block box that might be encrypting ECB or CBC, tells you which one is happening.
 
 # 题目思路
-给定一段密文, 判断使用 ECB 模式还是使用 CBC 模式
+* 实现加密, 随机选择 ECB 模式或者 CBC 模式进行加密操作
+* 给定一段密文, 判断使用 ECB 模式还是使用 CBC 模式
 
 # PS
 * 到后面有点卡住，所以参考了下 write_up 的思路写的
@@ -42,27 +43,31 @@ def generate_random_bytes(key_size=16):
 
 def encrypt_oracle(data):
     """
-    :param data: "plaintext"
-    :return: "CBC", b"ciphertext"
+    随机选择 CBC 模式或者 ECB 模式进行加密, 返回加密所使用的模式以及加密后的结果
+    :param data: 待加密明文, "plaintext"
+    :return: 模式以及加密结果, ("CBC", b"cipher_text")
     """
     size = 16
-
     key = generate_random_bytes(size)
-    plaintext = codecs.encode(data, "ascii")
+    encrypt_mode = random.choice([AES.MODE_CBC, AES.MODE_ECB])  # 随机选择一种加密模式
+    mode_dict = {AES.MODE_CBC: "CBC", AES.MODE_ECB: "ECB"}
 
-    plaintext = generate_random_bytes(random.randint(5, 10)) + plaintext + generate_random_bytes(random.randint(5, 10))
-    plaintext = pad(plaintext, size)
-    choice = random.choice([AES.MODE_CBC, AES.MODE_ECB])
-    if choice == AES.MODE_CBC:
+    data = codecs.encode(data, "ascii")  # 将 str 转成 bytes
+    # 对数据进行随机化处理
+    data = generate_random_bytes(random.randint(5, 10)) + data + generate_random_bytes(random.randint(5, 10))
+    data = pad(data, size)  # 填充操作
+
+    if encrypt_mode == AES.MODE_CBC:
         iv = generate_random_bytes(size)
-        encryptor = AES.new(key, AES.MODE_CBC, IV=iv)
-    elif choice == AES.MODE_ECB:
-        encryptor = AES.new(key, AES.MODE_ECB)
+        encrypt_tool = AES.new(key, AES.MODE_CBC, IV=iv)
+    elif encrypt_mode == AES.MODE_ECB:
+        encrypt_tool = AES.new(key, AES.MODE_ECB)
+    else:
+        raise RuntimeError("Encrypt_mode is wrong!")
 
-    mode = {AES.MODE_CBC: "CBC", AES.MODE_ECB: "ECB"}
-    ciphertext = encryptor.encrypt(plaintext)
+    after_encrypt_data = encrypt_tool.encrypt(data)
 
-    return mode[choice], ciphertext
+    return mode_dict[encrypt_mode], after_encrypt_data
 
 
 def pad(text, size=16):
