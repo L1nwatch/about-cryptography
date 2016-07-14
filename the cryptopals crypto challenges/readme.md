@@ -43,6 +43,7 @@
     * 27. Recover the key from CBC with IV=Key
 * Crypto Challenge Set 5
     * 39. Implement RSA
+        * 手动实现RSA, 包括加密和解密等操作
     * 40. Implement an E=3 RSA Broadcast attack
 * Crypto Challenge Set 6
     * 41. Implement unpadded message recovery oracle
