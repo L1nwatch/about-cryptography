@@ -28,14 +28,16 @@
     * 10. Implement CBC mode
         * 要求不用密码库手动实现 AES-CBC(利用 AES-ECB )
     * 11. An ECB/CBC detection oracle
-        * 随机选择 ECB 或者 CBC 模式进行加密，返回加密所采用的模式以及加密后的结果
-        * 仅给定一段密文，判断是采用 ECB 模式还是使用 CBC 模式进行的加密
+        * 随机选择 ECB 或者 CBC 模式进行加密, 返回加密所采用的模式以及加密后的结果
+        * 仅给定一段密文, 判断是采用 ECB 模式还是使用 CBC 模式进行的加密
     * 13. ECB cut-and-paste
         * 现在有一个存在漏洞的程序, 该程序的功能是给定一个邮箱地址, 返回对应的格式化串, 同时可以进行加密, 解密, 解析格式化串的操作.
         * 攻击者的目的就是构造一个邮箱, 得到对应的密文, 之后给被攻击的程序发送自己改过的密文(在不知道密钥的情况下), 使得攻击者的权限由 user 变成 admin
         * 利用 AES-ECB 的填充进行攻击
     * 14. Byte-at-a-time ECB decryption (Harder)
+        * 一个字节一个字节地对特定明文格式的 ECB 加密结果进行破解操作
     * 15. PKCS#7 padding validation
+        * 实现一下 PKCS#7 解填充, 如果格式不合法需要抛出异常
 * Crypto Challenge Set 3
     * 17. The CBC padding oracle
     * 18. Implement CTR, the stream cipher mode
