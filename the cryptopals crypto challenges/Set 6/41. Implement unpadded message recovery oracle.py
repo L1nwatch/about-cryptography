@@ -63,8 +63,8 @@ def create_rsa_keys(bits_length=1024, e=65537):
     """
     rsa = dict()
     while True:
-        p = gmpy2.mpz(getPrime(1024))
-        q = gmpy2.mpz(getPrime(1024))
+        p = gmpy2.mpz(getPrime(bits_length))
+        q = gmpy2.mpz(getPrime(bits_length))
         n = p * q
         phi_n = (p - 1) * (q - 1)
 
