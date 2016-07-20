@@ -43,6 +43,7 @@
         * 利用 CBC 填充进行攻击, 即只要服务器可能返回一个密文是否合法（通过填充值判断）, 就有机会让攻击者还原出明文
         * 原理主要是异或两次相当于没有异或, 攻击者接着利用 CBC 模式的特点尝试爆破
     * 18. Implement CTR, the stream cipher mode
+        * 利用 ECB 手动实现 CTR 模式的解密操作, 解密题目中给定的密文
     * 22. Crack an MT19937 seed
     * 23. Clone an MT19937 RNG from its output
     * 24. Create the MT19937 stream cipher and break it
