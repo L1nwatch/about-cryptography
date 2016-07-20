@@ -40,6 +40,8 @@
         * 实现一下 PKCS#7 解填充, 如果格式不合法需要抛出异常
 * Crypto Challenge Set 3
     * 17. The CBC padding oracle
+        * 利用 CBC 填充进行攻击, 即只要服务器可能返回一个密文是否合法（通过填充值判断）, 就有机会让攻击者还原出明文
+        * 原理主要是异或两次相当于没有异或, 攻击者接着利用 CBC 模式的特点尝试爆破
     * 18. Implement CTR, the stream cipher mode
     * 22. Crack an MT19937 seed
     * 23. Clone an MT19937 RNG from its output
