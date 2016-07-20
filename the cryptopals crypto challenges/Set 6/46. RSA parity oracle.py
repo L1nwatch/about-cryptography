@@ -110,8 +110,15 @@ def rsa_encrypt(data, n, e):
     return gmpy2.powmod(data, e, n)
 
 
-def crack(cipher_text, rsa):
-    raw_cipher_text = cipher_text
+def crack(data, rsa):
+    """
+    尝试不断二分逼近得到明文
+    :param data: 待破解的密文
+    :param rsa: RSA 相关参数
+    :return: 破解得到的明文
+    """
+    raw_cipher_text = data  # 保存原始待破解的密文
+
     # low和high表示明文范围
     low = 0
     high = rsa["n"] - 1
@@ -119,9 +126,9 @@ def crack(cipher_text, rsa):
     while int(low) != int(high):
         # 题目给的算法原理: If you double a ciphertext (multiply it by (2**e)%n)
         # the resulting plaintext will (obviously) be either even or odd.
-        cipher_text = (2 ** rsa["e"] * cipher_text) % rsa["n"]
+        data = (2 ** rsa["e"] * data) % rsa["n"]
 
-        if judge_rsa_parity(cipher_text, rsa["n"], rsa["d"]):
+        if judge_rsa_parity(data, rsa["n"], rsa["d"]):
             # odd: plaintext in upper half of range
             if high - low == 1:
                 # 明文一定是整数(不可能是浮点), 这种情况下说明找到了
@@ -134,10 +141,12 @@ def crack(cipher_text, rsa):
                 high = low
             high -= (high - low) // 2
 
+        print("明文存在与此范围内: {}, {}".format(low, high))
+
     # 考虑到可能有误差, 设置个误差范围进行解码
     possible_plaintexts = list()
     for i in range(-10, 10):
-        plaintext = gmpy2.powmod(low + i, rsa["e"], rsa["n"])
+        # plaintext = gmpy2.powmod(low + i, rsa["e"], rsa["n"])
         possible_plaintexts.append(int(low + i).to_bytes(1000, "big").replace(b"\x00", b""))
 
     return possible_plaintexts
@@ -157,6 +166,6 @@ if __name__ == "__main__":
     recovered_plaintext = crack(cipher_text, rsa)
     print("Raw plaintext: ", plaintext)
     print("恢复可能有误差, 所以恢复一定范围的值")
-    print("Recovered plaintext: ", recovered_plaintext)
+    print("Recovered plaintext list: ", recovered_plaintext)
     if plaintext in recovered_plaintext:
-        print("恢复成功, 序号: ", recovered_plaintext.index(plaintext))
+        print("恢复成功, 索引值 {} 即为正确的明文".format(recovered_plaintext.index(plaintext)))
