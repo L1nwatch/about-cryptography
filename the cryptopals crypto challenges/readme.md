@@ -64,6 +64,9 @@
     * 39. Implement RSA
         * 手动实现RSA, 包括加密和解密等操作
     * 40. Implement an E=3 RSA Broadcast attack
+        * 当 RSA 没有对明文进行填充操作时, 攻击者可以利用中国剩余定理还原出明文(有精度损失)
+        * 前提条件是, 有多对公钥对同一明文进行加密操作
+        * 演示的情况是当 e = 3 时的攻击操作
 * Crypto Challenge Set 6
     * 41. Implement unpadded message recovery oracle
     * 46. RSA parity oracle
