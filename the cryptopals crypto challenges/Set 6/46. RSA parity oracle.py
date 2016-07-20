@@ -40,7 +40,7 @@ Print the upper bound of the message as a string at each iteration; you'll see t
 Decrypt the string (after encrypting it to a hidden private key) above.
 
 # 题意
-讲述了 RSA（密文是数字）的奇偶性可以被利用会最终导致泄漏其明文
+讲述了 RSA（密文是数字）的奇偶性可以被利用, 最终会导致泄漏其明文
 
 # 步骤：
 1. 手搓 RSA(前面的题 41 搓过了我就直接复制了)
@@ -110,25 +110,25 @@ def rsa_encrypt(data, n, e):
     return gmpy2.powmod(data, e, n)
 
 
-def crack(data, rsa):
+def crack(data, my_rsa):
     """
     尝试不断二分逼近得到明文
     :param data: 待破解的密文
-    :param rsa: RSA 相关参数
+    :param my_rsa: RSA 相关参数
     :return: 破解得到的明文
     """
     raw_cipher_text = data  # 保存原始待破解的密文
 
     # low和high表示明文范围
     low = 0
-    high = rsa["n"] - 1
+    high = my_rsa["n"] - 1
 
     while int(low) != int(high):
         # 题目给的算法原理: If you double a ciphertext (multiply it by (2**e)%n)
         # the resulting plaintext will (obviously) be either even or odd.
-        data = (2 ** rsa["e"] * data) % rsa["n"]
+        data = (2 ** my_rsa["e"] * data) % my_rsa["n"]
 
-        if judge_rsa_parity(data, rsa["n"], rsa["d"]):
+        if judge_rsa_parity(data, my_rsa["n"], my_rsa["d"]):
             # odd: plaintext in upper half of range
             if high - low == 1:
                 # 明文一定是整数(不可能是浮点), 这种情况下说明找到了
