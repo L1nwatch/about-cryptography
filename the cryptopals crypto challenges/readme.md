@@ -59,7 +59,7 @@
 * Crypto Challenge Set 4
     * 27. Recover the key from CBC with IV=Key
         * 如果 CBC 模式使用的密钥与 IV 是一致的, 那么攻击者可以还原得到密钥
-        * 需要满足的前提条件还有一个: 攻击者构造的密文解密结果中含有 high-ASCII 才行, 即 ASCII 码值大于 128 的字符
+        * 需要满足的前提条件还有一个: 攻击者构造的密文解密结果中含有 high-ASCII 才行, 即存在 ASCII 码值大于 128 的字符
 * Crypto Challenge Set 5
     * 39. Implement RSA
         * 手动实现RSA, 包括加密和解密等操作
