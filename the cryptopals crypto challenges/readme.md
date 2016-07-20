@@ -45,6 +45,8 @@
     * 18. Implement CTR, the stream cipher mode
         * 利用 ECB 手动实现 CTR 模式的解密操作, 解密题目中给定的密文
     * 22. Crack an MT19937 seed
+        * 证明只要知道 MT19937(随机数生成器)的一个输出值, 可以根据这个输出值找到随机数生成器所采用的种子
+        * 原理是爆破可能的种子, 判断生成的随机数是否一致, 就可以知道这个是不是种子了
     * 23. Clone an MT19937 RNG from its output
     * 24. Create the MT19937 stream cipher and break it
 * Crypto Challenge Set 4
