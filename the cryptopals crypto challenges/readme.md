@@ -48,6 +48,9 @@
         * 证明只要知道 MT19937(随机数生成器)的一个输出值, 可以根据这个输出值找到随机数生成器所采用的种子
         * 原理是爆破可能的种子, 判断生成的随机数是否一致, 就可以知道这个是不是种子了
     * 23. Clone an MT19937 RNG from its output
+        * 实现一个 MT19937 随机数生成器的复制操作
+        * 仅需知道 MT19937 产生的 624 个值就可以完成这个复制操作, 无需知道种子, 也无需爆破种子
+        * 原理是 MT19937 算法中的 temper 操作存在逆算法, 实现该逆算法再利用 624 个值就可以实现克隆了
     * 24. Create the MT19937 stream cipher and break it
 * Crypto Challenge Set 4
     * 27. Recover the key from CBC with IV=Key
