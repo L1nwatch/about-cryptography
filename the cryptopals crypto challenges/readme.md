@@ -52,6 +52,10 @@
         * 仅需知道 MT19937 产生的 624 个值就可以完成这个复制操作, 无需知道种子, 也无需爆破种子
         * 原理是 MT19937 算法中的 temper 操作存在逆算法, 实现该逆算法再利用 624 个值就可以实现克隆了
     * 24. Create the MT19937 stream cipher and break it
+        * 利用 MT19937 实现流加密算法
+        * 给定一个密文, 已知该密文的部分明文, 比如说明文后缀, 破解该密文
+        * 利用的原理是异或两次相当于没有异或, 另一个原理是爆破种子, 参考 Challenge 22
+        * 顺带实现一个实例(密码令牌), 该 token 以时间戳作为种子, 攻击者可以爆破得到对应的密码令牌
 * Crypto Challenge Set 4
     * 27. Recover the key from CBC with IV=Key
 * Crypto Challenge Set 5
