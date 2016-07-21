@@ -101,5 +101,3 @@ def bytes_xor(bytes1, bytes2):
 
 if __name__ == '__main__':
     main()
-
-
