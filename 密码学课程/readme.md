@@ -4,6 +4,4 @@
 # 证书及课程链接
 [课程链接](https://www.coursera.org/learn/crypto)
 
-当年的证书还是免费的, 顺便摆上来吧
-
-<img src="https://github.com/L1nwatch/about-cryptography/blob/master/%E5%AF%86%E7%A0%81%E5%AD%A6%E8%AF%BE%E7%A8%8B/Cryptography_I_SOA.pdf" width="20%" height="50%">
+[当年的证书还是免费的](https://github.com/L1nwatch/about-cryptography/blob/master/%E5%AF%86%E7%A0%81%E5%AD%A6%E8%AF%BE%E7%A8%8B/Cryptography_I_SOA.pdf)
