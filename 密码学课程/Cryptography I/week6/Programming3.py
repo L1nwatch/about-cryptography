@@ -64,4 +64,3 @@ def ceil_sqrt(num):
 
 if __name__ == "__main__":
     main()
-
