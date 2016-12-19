@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2016.12.19 之前写得有点渣, 重构一下吧
 2016.12.19 开始编写信息安全实验要求的工程, 这里是服务端
 """
 
@@ -18,20 +19,18 @@ __author__ = '__L1n__w@tch'
 
 
 class Server:
-    server_sock = None
-    client_sock = None
-    contact = "客户端"
-    client_des_key = None
-    client_rsa_pk = None
-
-    def __init__(self, server_address=(("127.0.0.1", 8083)), max_clients=1):
+    def __init__(self, server_address=(("127.0.0.1", 8083))):
         self.server_address = server_address
-        self.max_clients = max_clients
+        self.my_sock = None  # 程序自身的 sock
+        self.other_sock = None  # 对方的 sock
+        self.client_name = "客户端"
+        self.client_des_key = None
+        self.client_rsa_pk = None
 
     def run(self):
         self.root = tkinter.Tk()
 
-        self.server_sock = self.create_socket()
+        self.my_sock = self.create_socket()
         self.rsa = self.create_rsa_key()
 
         self.initialize_root()
@@ -151,16 +150,16 @@ class Server:
         def __exchange_pk():
             self._update_state_board("开始交换公钥...", new=True)
 
-            self.client_rsa_pk = self.client_sock.recv(1024)
+            self.client_rsa_pk = self.other_sock.recv(1024)
             my_rsa_pk = self.rsa.publickey().exportKey("PEM")
-            self.client_sock.send(my_rsa_pk)
+            self.other_sock.send(my_rsa_pk)
 
             self._update_state_board("交换公钥成功!")
 
         self._update_state_board("服务端准备就绪...正在监听...", new=True)
         try:
-            self.server_sock.listen(self.max_clients)
-            self.client_sock, addr = self.server_sock.accept()
+            self.my_sock.listen(1)  # 写死了,这里只允许一个客户端连接
+            self.other_sock, addr = self.my_sock.accept()
         except:
             self._update_state_board("没有发现尝试连接的客户端...")
             return
@@ -225,17 +224,17 @@ class Server:
         file_path = tkinter.filedialog.askopenfilename(title="要发送的文件为?")
         if file_path == "":
             return
-        self._update_state_board("请确保{0}已经准备好开始接收文件...".format(self.contact), new=True)
+        self._update_state_board("请确保{0}已经准备好开始接收文件...".format(self.client_name), new=True)
         try:
-            __ensure_can_send_file(self.client_sock)
+            __ensure_can_send_file(self.other_sock)
         except:
-            self._update_state_board("{0}还没准备好开始接收文件...".format(self.contact))
+            self._update_state_board("{0}还没准备好开始接收文件...".format(self.client_name))
             return
 
         des_key = __create_des_key(key_size=8)
         encrypted_des_key = __encrypt_des_key(self.client_rsa_pk)
-        __exchange_encrypted_des_key(self.client_sock)
-        __send_encrypted_file(self.client_sock)
+        __exchange_encrypted_des_key(self.other_sock)
+        __send_encrypted_file(self.other_sock)
 
         self.buttons["decrypt_file_button"].configure(state="disabled")
 
@@ -324,15 +323,15 @@ class Server:
         file_save_path = tkinter.filedialog.asksaveasfilename(title="文件保存路径为?")
         if file_save_path == "":
             return
-        self._update_state_board("请确保{0}已经准备好开始发送文件...".format(self.contact), new=True)
+        self._update_state_board("请确保{0}已经准备好开始发送文件...".format(self.client_name), new=True)
         try:
-            __prepare_to_receive_file(self.client_sock)
+            __prepare_to_receive_file(self.other_sock)
         except:
-            self._update_state_board("{0}还没准备好开始发送文件...".format(self.contact))
+            self._update_state_board("{0}还没准备好开始发送文件...".format(self.client_name))
             return
 
-        self.encrypted_des_key = __exchange_encrypted_des_key(self.client_sock)
-        __receive_encrypted_file(self.client_sock, file_save_path)
+        self.encrypted_des_key = __exchange_encrypted_des_key(self.other_sock)
+        __receive_encrypted_file(self.other_sock, file_save_path)
         __ask_decrypt_file_now(file_save_path)
 
         self.buttons["decrypt_file_button"].configure(state="normal")
