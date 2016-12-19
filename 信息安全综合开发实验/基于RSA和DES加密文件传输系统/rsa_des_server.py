@@ -19,16 +19,18 @@ __author__ = '__L1n__w@tch'
 
 
 class Server:
-    def __init__(self, server_address=(("127.0.0.1", 8083))):
+    def __init__(self, server_address=(("0.0.0.0", 8083))):
         self.server_address = server_address
         self.my_sock = None  # 程序自身的 sock
         self.other_sock = None  # 对方的 sock
         self.client_name = "客户端"
         self.client_des_key = None
         self.client_rsa_pk = None
+        self.root_tk = None  # 主窗体
+        self.state_board = None  # 状态栏
 
     def run(self):
-        self.root = tkinter.Tk()
+        self.root_tk = tkinter.Tk()
 
         self.my_sock = self.create_socket()
         self.rsa = self.create_rsa_key()
@@ -38,10 +40,14 @@ class Server:
         self.initialize_state_label()
 
         self._update_state_board("初始化成功...\n请点击按钮进行相应操作...")
-        self.root.mainloop()
+        self.root_tk.mainloop()
 
     def create_socket(self):
-        socket.setdefaulttimeout(10)
+        """
+        创建 TCP 套接字
+        :return:
+        """
+        # socket.setdefaulttimeout(10)  # 套接字超时时间
         server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_sock.bind(self.server_address)
         return server_sock
@@ -53,8 +59,8 @@ class Server:
     def initialize_root(self):
         # 初始化主窗口大小、标题等
         # self.root.geometry("230x470")
-        self.root.title("Mini Filer 服务端 v0.8")
-        self.root.resizable(height=False, width=False)
+        self.root_tk.title("Mini Filer 服务端 v0.8")
+        self.root_tk.resizable(height=False, width=False)
 
     def initialize_buttons(self):
         # 初始化查看自己公钥按钮
@@ -76,7 +82,11 @@ class Server:
         self.state_board = state_board
 
     def _set_show_my_pk_button(self):
-        my_pk_button_frame = tkinter.Frame(self.root)
+        """
+        设置显示自己公钥的按钮
+        :return:
+        """
+        my_pk_button_frame = tkinter.Frame(self.root_tk)
 
         my_pk_button = tkinter.Button(my_pk_button_frame,
                                       text="查看自己的公钥", command=self._show_pk)
@@ -85,6 +95,11 @@ class Server:
         my_pk_button_frame.grid(row=0, column=0)
 
     def _show_pk(self, user="server"):
+        """
+        显示公钥窗口的内部细节实现
+        :param user:
+        :return:
+        """
         sub_window = tkinter.Toplevel()
 
         if user == "server":
@@ -134,7 +149,7 @@ class Server:
 
             return buttons
 
-        clients_frame = tkinter.LabelFrame(self.root)
+        clients_frame = tkinter.LabelFrame(self.root_tk)
 
         # 设置头像
         __set_user_ico(clients_frame)
@@ -148,7 +163,7 @@ class Server:
 
     def _connect_client(self):
         def __exchange_pk():
-            self._update_state_board("开始交换公钥...", new=True)
+            self._update_state_board("开始交换公钥...", print_sep=True)
 
             self.client_rsa_pk = self.other_sock.recv(1024)
             my_rsa_pk = self.rsa.publickey().exportKey("PEM")
@@ -156,7 +171,7 @@ class Server:
 
             self._update_state_board("交换公钥成功!")
 
-        self._update_state_board("服务端准备就绪...正在监听...", new=True)
+        self._update_state_board("服务端准备就绪...正在监听...", print_sep=True)
         try:
             self.my_sock.listen(1)  # 写死了,这里只允许一个客户端连接
             self.other_sock, addr = self.my_sock.accept()
@@ -193,7 +208,7 @@ class Server:
             return os.urandom(key_size)
 
         def __send_encrypted_file(sock):
-            self._update_state_board("发送加密文件中...", new=True)
+            self._update_state_board("发送加密文件中...", print_sep=True)
 
             encrypted_file = __encrypt_file()
             file_name, file_size = os.path.basename(file_path), len(encrypted_file)
@@ -206,7 +221,7 @@ class Server:
             self._update_state_board("发送成功!")
 
         def __exchange_encrypted_des_key(sock):
-            self._update_state_board("开始交换加密的DES密钥...", new=True)
+            self._update_state_board("开始交换加密的DES密钥...", print_sep=True)
 
             sock.send(encrypted_des_key[0])
             sock.recv(len(b"OK"))
@@ -224,7 +239,7 @@ class Server:
         file_path = tkinter.filedialog.askopenfilename(title="要发送的文件为?")
         if file_path == "":
             return
-        self._update_state_board("请确保{0}已经准备好开始接收文件...".format(self.client_name), new=True)
+        self._update_state_board("请确保{0}已经准备好开始接收文件...".format(self.client_name), print_sep=True)
         try:
             __ensure_can_send_file(self.other_sock)
         except:
@@ -263,24 +278,30 @@ class Server:
 
         file_path = tkinter.filedialog.asksaveasfilename(title="解密完的文件保存在?")
         file_contents = __decrypt_encrypted_file(encrypted_file)
-        self._update_state_board("解密完成!", new=True)
+        self._update_state_board("解密完成!", print_sep=True)
         with open(file_path, "wb") as f:
             f.write(file_contents)
 
         return file_contents
 
-    def _update_state_board(self, message, new=False):
-        if new is True:
+    def _update_state_board(self, message, print_sep=False):
+        """
+        更新状态栏
+        :param message: 传给状态栏的信息
+        :param print_sep: 是否要打印分隔符
+        :return:
+        """
+        if print_sep is True:
             self._update_state_board("*" * 40)
         self.state_board.configure(state="normal")
         self.state_board.insert(tkinter.END, message + "\n")
         self.state_board.configure(state="disabled")
         self.state_board.see(tkinter.END)
-        self.root.update()
+        self.root_tk.update()
 
     def _receive_file(self):
         def __exchange_encrypted_des_key(sock):
-            self._update_state_board("开始交换加密的DES密钥...", new=True)
+            self._update_state_board("开始交换加密的DES密钥...", print_sep=True)
 
             encrypted_des_key = (sock.recv(1024),)
             sock.send(b"OK")
@@ -290,7 +311,7 @@ class Server:
             return encrypted_des_key
 
         def __receive_encrypted_file(client, file_path):
-            self._update_state_board("接收加密文件中...", new=True)
+            self._update_state_board("接收加密文件中...", print_sep=True)
 
             file_name, file_size = json.loads(client.recv(1024).decode("utf8").strip())
             with open(file_path, "wb") as f:
@@ -323,7 +344,7 @@ class Server:
         file_save_path = tkinter.filedialog.asksaveasfilename(title="文件保存路径为?")
         if file_save_path == "":
             return
-        self._update_state_board("请确保{0}已经准备好开始发送文件...".format(self.client_name), new=True)
+        self._update_state_board("请确保{0}已经准备好开始发送文件...".format(self.client_name), print_sep=True)
         try:
             __prepare_to_receive_file(self.other_sock)
         except:
