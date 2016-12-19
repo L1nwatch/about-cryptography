@@ -5,6 +5,7 @@
 2016.12.19 之前写得有点渣, 重构一下吧
 2016.12.19 开始编写信息安全实验要求的工程, 这里是服务端
 """
+from basic_class import BasicUI
 
 import socket
 import os
@@ -18,16 +19,15 @@ from Crypto.Cipher import DES
 __author__ = '__L1n__w@tch'
 
 
-class Server:
+class Server(BasicUI):
     def __init__(self, server_address=(("0.0.0.0", 8083))):
+        super().__init__()
         self.server_address = server_address
         self.my_sock = None  # 程序自身的 sock
         self.other_sock = None  # 对方的 sock
         self.client_name = "客户端"
         self.client_des_key = None
         self.client_rsa_pk = None
-        self.root_tk = None  # 主窗体
-        self.state_board = None  # 状态栏
 
     def run(self):
         self.root_tk = tkinter.Tk()
