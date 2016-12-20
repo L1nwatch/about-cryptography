@@ -28,12 +28,13 @@ class Server(BasicUI):
         self.client_name = "客户端"
         self.client_des_key = None
         self.client_rsa_pk = None
+        self.rsa_key = None  # RSA 公私钥
 
     def run(self):
         self.root_tk = tkinter.Tk()
 
         self.my_sock = self.create_socket()
-        self.rsa = self.create_rsa_key()
+        self.rsa_key = self.create_rsa_key()
 
         self.initialize_root()
         self.initialize_buttons()
@@ -52,10 +53,6 @@ class Server(BasicUI):
         server_sock.bind(self.server_address)
         return server_sock
 
-    def create_rsa_key(self):
-        rsa_key = RSA.generate(1024, e=65537)
-        return rsa_key
-
     def initialize_root(self):
         # 初始化主窗口大小、标题等
         # self.root.geometry("230x470")
@@ -68,18 +65,9 @@ class Server(BasicUI):
 
         # 用户头像文件
         self.user_ico = tkinter.PhotoImage(file="user.gif").subsample(2)
+
         # 初始化客户端相关按钮
         self._set_clients_relevant_buttons()
-
-    def initialize_state_label(self):
-        state_label_frame = tkinter.LabelFrame()
-
-        state_board = tkinter.Text(width=40, height=20)
-        state_board.grid()
-
-        state_label_frame.grid()
-
-        self.state_board = state_board
 
     def _set_show_my_pk_button(self):
         """
@@ -103,7 +91,7 @@ class Server(BasicUI):
         sub_window = tkinter.Toplevel()
 
         if user == "server":
-            pk = self.rsa.publickey().exportKey("PEM")
+            pk = self.rsa_key.publickey().exportKey("PEM")
             sub_window.title("自己的公钥")
         else:
             pk = self.client_rsa_pk
@@ -117,56 +105,14 @@ class Server(BasicUI):
         text_label.grid()
         sub_window.grid()
 
-    def _set_clients_relevant_buttons(self):
-        def __set_user_ico(frame):
-            image_label = tkinter.Label(frame, image=self.user_ico)
-            image_label.grid(column=0)
 
-        def __set_function_buttons(frame):
-            buttons = dict()
-
-            buttons["connect_button"] = \
-                tkinter.Button(frame, text="开始与客户端通信",
-                               command=self._connect_client)
-            buttons["show_pk_button"] = \
-                tkinter.Button(frame, text="查看客户端公钥",
-                               command=lambda: self._show_pk(user="Client"), state="disabled")
-            buttons["send_file_button"] = \
-                tkinter.Button(frame, text="加密文件并发送给客户端",
-                               command=self._send_file, state="disabled")
-            buttons["decrypt_file_button"] = \
-                tkinter.Button(frame, text="解密从客户端接收到的加密文件",
-                               command=self._decrypt_file, state="disabled")
-            buttons["receive_file_button"] = \
-                tkinter.Button(frame, text="接收客户端发送的文件",
-                               command=self._receive_file, state="disabled")
-
-            buttons["connect_button"].grid(row=0, sticky=tkinter.E + tkinter.W)
-            buttons["show_pk_button"].grid(row=1, sticky=tkinter.E + tkinter.W)
-            buttons["send_file_button"].grid(row=2, sticky=tkinter.E + tkinter.W)
-            buttons["decrypt_file_button"].grid(row=3, sticky=tkinter.E + tkinter.W)
-            buttons["receive_file_button"].grid(row=4, sticky=tkinter.E + tkinter.W)
-
-            return buttons
-
-        clients_frame = tkinter.LabelFrame(self.root_tk)
-
-        # 设置头像
-        __set_user_ico(clients_frame)
-
-        # 功能按钮: 新建连接、查看公钥、接收文件、解密其发送的文件、加密文件并发送
-        function_frame = tkinter.Frame(clients_frame)
-        self.buttons = __set_function_buttons(function_frame)
-        function_frame.grid()
-
-        clients_frame.grid()
 
     def _connect_client(self):
         def __exchange_pk():
             self._update_state_board("开始交换公钥...", print_sep=True)
 
             self.client_rsa_pk = self.other_sock.recv(1024)
-            my_rsa_pk = self.rsa.publickey().exportKey("PEM")
+            my_rsa_pk = self.rsa_key.publickey().exportKey("PEM")
             self.other_sock.send(my_rsa_pk)
 
             self._update_state_board("交换公钥成功!")
@@ -259,7 +205,7 @@ class Server(BasicUI):
             return plain_text
 
         def __decrypt_encrypted_file(file_path):
-            des_key = __decrypt_des_key(self.rsa, self.encrypted_des_key)
+            des_key = __decrypt_des_key(self.rsa_key, self.encrypted_des_key)
 
             with open(file_path, "rb") as f:
                 data = f.read()

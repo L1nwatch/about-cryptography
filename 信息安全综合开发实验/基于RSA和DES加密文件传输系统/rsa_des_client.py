@@ -47,10 +47,6 @@ class Client(BasicUI):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         return sock
 
-    def create_rsa_key(self):
-        rsa_key = RSA.generate(1024, e=65537)
-        return rsa_key
-
     def initialize_root(self):
         # 初始化主窗口大小、标题等
         # self.root.geometry("230x470")
@@ -63,18 +59,9 @@ class Client(BasicUI):
 
         # 用户头像文件
         self.user_ico = tkinter.PhotoImage(file="user.gif").subsample(2)
+
         # 初始化客户端相关按钮
         self._set_clients_relevant_buttons()
-
-    def initialize_state_label(self):
-        state_label_frame = tkinter.LabelFrame()
-
-        state_board = tkinter.Text(width=40, height=20)
-        state_board.grid()
-
-        state_label_frame.grid()
-
-        self.state_board = state_board
 
     def _set_show_my_pk_button(self):
         my_pk_button_frame = tkinter.Frame(self.root)
