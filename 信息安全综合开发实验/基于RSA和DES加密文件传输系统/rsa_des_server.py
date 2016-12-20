@@ -195,7 +195,7 @@ class Server(BasicUI):
             encrypt_sir = DES.new(des_key, DES.MODE_CTR, counter=lambda: counter)
 
             with open(file_path, "rb") as f:
-                cipher_text = encrypt_sir.encrypt(f.read())
+                cipher_text = encrypt_sir.encrypt(self.padding(f.read()))
 
             return counter + cipher_text
 
@@ -268,7 +268,7 @@ class Server(BasicUI):
             des = DES.new(des_key, DES.MODE_CTR, counter=lambda: data[counter])
             file_contents = des.decrypt(data[8:])
 
-            return file_contents
+            return self.un_padding(file_contents)
 
         if encrypted_file is None:
             # http://www.xuebuyuan.com/1918954.html

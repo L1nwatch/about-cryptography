@@ -2,8 +2,11 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
+2016.12.20 融合进自己的 pad 以及 unpad 保证 DES 加解密正常
 2016.12.19 开始编写信息安全实验要求的工程, 这里是客户端
 """
+from basic_class import BasicUI
+
 import socket
 import os
 import json
@@ -16,15 +19,15 @@ from Crypto.Cipher import DES
 __author__ = '__L1n__w@tch'
 
 
-class Client:
+class Client(BasicUI):
     sock = None
     client_des_key = None
     contact = "服务端"
     server_rsa_pk = None
 
-    def __init__(self, server_address=(("127.0.0.1", 8083)), max_clients=1):
+    def __init__(self, server_address=(("127.0.0.1", 8083))):
+        super().__init__()
         self.server_address = server_address
-        self.max_clients = max_clients
 
     def run(self):
         self.root = tkinter.Tk()
@@ -175,8 +178,7 @@ class Client:
             encrypt_sir = DES.new(des_key, DES.MODE_CTR, counter=lambda: counter)
 
             with open(file_path, "rb") as f:
-                # 这里加密有问题, 需要填充到 8 的整数倍
-                cipher_text = encrypt_sir.encrypt(f.read())
+                cipher_text = encrypt_sir.encrypt(self.padding(f.read()))
 
             return counter + cipher_text
 
@@ -249,7 +251,7 @@ class Client:
             des = DES.new(des_key, DES.MODE_CTR, counter=lambda: data[counter])
             file_contents = des.decrypt(data[8:])
 
-            return file_contents
+            return self.un_padding(file_contents)
 
         if encrypted_file is None:
             # http://www.xuebuyuan.com/1918954.html
