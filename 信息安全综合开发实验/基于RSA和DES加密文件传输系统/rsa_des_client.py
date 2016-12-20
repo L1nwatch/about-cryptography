@@ -175,6 +175,7 @@ class Client:
             encrypt_sir = DES.new(des_key, DES.MODE_CTR, counter=lambda: counter)
 
             with open(file_path, "rb") as f:
+                # 这里加密有问题, 需要填充到 8 的整数倍
                 cipher_text = encrypt_sir.encrypt(f.read())
 
             return counter + cipher_text
