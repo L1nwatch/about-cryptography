@@ -40,11 +40,13 @@ class Client(BasicUI):
 
     @staticmethod
     def create_socket():
+        # TODO: 这里要取消掉,改用多线程判断超时
         socket.setdefaulttimeout(10)
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         return sock
 
     def _connect_client(self):
+        # TODO: 字符串替换, 用变量表示
         def __exchange_pk():
             self._update_state_board("开始交换公钥...", print_sep=True)
 

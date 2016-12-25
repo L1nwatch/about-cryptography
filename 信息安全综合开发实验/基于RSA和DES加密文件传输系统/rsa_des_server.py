@@ -44,12 +44,14 @@ class Server(BasicUI):
         创建 TCP 套接字
         :return:
         """
+        # TODO: 这里要取消掉,改用多线程判断超时
         socket.setdefaulttimeout(10)  # 套接字超时时间
         server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_sock.bind(self.server_address)
         return server_sock
 
     def _connect_client(self):
+        # TODO: 字符串替换, 用变量表示
         def __exchange_pk():
             self._update_state_board("开始交换公钥...", print_sep=True)
 

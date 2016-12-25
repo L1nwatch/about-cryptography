@@ -21,7 +21,7 @@ __author__ = '__L1n__w@tch'
 class BasicUI:
     def __init__(self):
         self.root_tk = None  # 主窗体
-        self.state_board = None  # 状态栏\
+        self.state_board = None  # 状态栏
         self.other_sock = None  # 交互用的 sock
         self.other_name = None  # 对方的名字
         self.my_name = None  # 自己的名字
@@ -285,7 +285,13 @@ class BasicUI:
                 return
 
         file_path = tkinter.filedialog.asksaveasfilename(title="解密完的文件保存在?")
-        file_contents = __decrypt_encrypted_file(encrypted_file)
+
+        try:
+            file_contents = __decrypt_encrypted_file(encrypted_file)
+        except AssertionError:
+            tkinter.messagebox.showerror(title="错误", message="待解密文件不合法!")
+            return False
+
         self._update_state_board("解密完成!", print_sep=True)
         with open(file_path, "wb") as f:
             f.write(file_contents)
