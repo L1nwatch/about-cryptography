@@ -211,7 +211,7 @@ class BasicUI:
                 return
             else:
                 print(data)
-                raise RuntimeError
+                raise socket.timeout
 
         file_save_path = tkinter.filedialog.asksaveasfilename(title="文件保存路径为?")
         if file_save_path == "":
@@ -242,7 +242,8 @@ class BasicUI:
         self.state_board.insert(tkinter.END, message + "\n")
         self.state_board.configure(state="disabled")
         self.state_board.see(tkinter.END)
-        self.root_tk.update()
+        self.state_board.update()
+        # self.root_tk.update()
 
     def initialize_buttons(self):
         # 初始化查看自己公钥按钮
@@ -335,9 +336,9 @@ class BasicUI:
             data = sock.recv(len(b"ready to receive file"))
             if b"ready to receive file" == data:
                 sock.send(b"ready to send file")
-                return
+                return False
             else:
-                raise RuntimeError
+                raise socket.timeout
 
         file_path = tkinter.filedialog.askopenfilename(title="要发送的文件为?")
         if file_path == "":

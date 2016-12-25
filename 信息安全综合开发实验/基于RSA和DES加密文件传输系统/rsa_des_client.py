@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 # version: Python3.X
 """
-2016.12.20 融合进自己的 pad 以及 unpad 保证 DES 加解密正常
+2016.12.25 重构, 修复已知 BUG
+2016.12.20 融合进自己的 pad 以及 unpad 保证 DES 加解密正常, 已经放进 BaseUI 了
 2016.12.19 开始编写信息安全实验要求的工程, 这里是客户端
 """
 from basic_class import BasicUI
@@ -14,7 +15,7 @@ __author__ = '__L1n__w@tch'
 
 
 class Client(BasicUI):
-    def __init__(self, server_address=(("127.0.0.1", 8083))):
+    def __init__(self, server_address=(("0.0.0.0", 8083))):
         super().__init__()
         self.server_address = server_address
         self.other_sock = None
@@ -56,9 +57,9 @@ class Client(BasicUI):
         self._update_state_board("尝试与服务端进行连接...", print_sep=True)
         try:
             self.other_sock.connect(self.server_address)
-        except ConnectionRefusedError:
+        except (ConnectionRefusedError, OSError):
             self._update_state_board("连接失败...请确保服务端正常运行...")
-            return
+            return False
         self._update_state_board("成功连接上服务端!")
 
         __exchange_pk()
