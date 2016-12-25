@@ -21,7 +21,13 @@ __author__ = '__L1n__w@tch'
 class BasicUI:
     def __init__(self):
         self.root_tk = None  # 主窗体
-        self.state_board = None  # 状态栏
+        self.state_board = None  # 状态栏\
+        self.other_sock = None  # 交互用的 sock
+        self.other_name = None  # 对方的名字
+        self.my_name = None  # 自己的名字
+        self.other_rsa_pk = None  # 对方的公钥
+        self.rsa_key = None  # 自己的公钥
+        self.user_ico = None  # 头像文件
 
     @staticmethod
     def padding(data, size=8):
@@ -192,11 +198,11 @@ class BasicUI:
 
             self._update_state_board("接收成功!")
 
-        def __ask_decrypt_file_now(file_save_path):
+        def __ask_decrypt_file_now(path):
             choice = tkinter.messagebox.askyesno(
                 message="是否现在解密文件?[PS: 每次发送的文件都会使用新的DES密钥, 故需要在下次发送文件前对接收到的加密文件进行解密]")
             if choice is True:
-                self._decrypt_file(file_save_path)
+                self._decrypt_file(path)
 
         def __prepare_to_receive_file(sock):
             sock.send(b"ready to receive file")
@@ -259,17 +265,17 @@ class BasicUI:
             plain_text = decrypter.decrypt(encrypted_key)
             return plain_text
 
-        def __decrypt_encrypted_file(file_path):
+        def __decrypt_encrypted_file(path):
             des_key = __decrypt_des_key(self.rsa_key, self.encrypted_des_key)
 
-            with open(file_path, "rb") as f:
-                data = f.read()
+            with open(path, "rb") as file:
+                data = file.read()
 
             counter = slice(0, 8)
             des = DES.new(des_key, DES.MODE_CTR, counter=lambda: data[counter])
-            file_contents = des.decrypt(data[8:])
+            decrypt_content = des.decrypt(data[8:])
 
-            return self.un_padding(file_contents)
+            return self.un_padding(decrypt_content)
 
         if encrypted_file is None:
             # http://www.xuebuyuan.com/1918954.html
@@ -335,13 +341,14 @@ class BasicUI:
 
         file_path = tkinter.filedialog.askopenfilename(title="要发送的文件为?")
         if file_path == "":
-            return
+            return False
+
         self._update_state_board("请确保{0}已经准备好开始接收文件...".format(self.other_name), print_sep=True)
         try:
             __ensure_can_send_file(self.other_sock)
         except socket.timeout:
             self._update_state_board("{0}还没准备好开始接收文件...".format(self.other_name))
-            return
+            return False
 
         des_key = __create_des_key(key_size=8)
         encrypted_des_key = __encrypt_des_key(self.other_rsa_pk)
