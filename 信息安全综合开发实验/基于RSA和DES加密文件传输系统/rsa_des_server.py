@@ -8,13 +8,7 @@
 from basic_class import BasicUI
 
 import socket
-import os
-import json
 import tkinter
-import tkinter.messagebox
-import tkinter.filedialog
-from Crypto.PublicKey import RSA
-from Crypto.Cipher import DES
 
 __author__ = '__L1n__w@tch'
 
@@ -25,9 +19,10 @@ class Server(BasicUI):
         self.server_address = server_address
         self.my_sock = None  # 程序自身的 sock
         self.other_sock = None  # 对方的 sock
-        self.client_name = "客户端"
+        self.other_name = "客户端"
+        self.my_name = "服务端"
         self.client_des_key = None
-        self.client_rsa_pk = None
+        self.other_rsa_pk = None
         self.rsa_key = None  # RSA 公私钥
 
     def run(self):
@@ -48,70 +43,16 @@ class Server(BasicUI):
         创建 TCP 套接字
         :return:
         """
-        # socket.setdefaulttimeout(10)  # 套接字超时时间
+        socket.setdefaulttimeout(10)  # 套接字超时时间
         server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_sock.bind(self.server_address)
         return server_sock
-
-    def initialize_root(self):
-        # 初始化主窗口大小、标题等
-        # self.root.geometry("230x470")
-        self.root_tk.title("Mini Filer 服务端 v0.8")
-        self.root_tk.resizable(height=False, width=False)
-
-    def initialize_buttons(self):
-        # 初始化查看自己公钥按钮
-        self._set_show_my_pk_button()
-
-        # 用户头像文件
-        self.user_ico = tkinter.PhotoImage(file="user.gif").subsample(2)
-
-        # 初始化客户端相关按钮
-        self._set_clients_relevant_buttons()
-
-    def _set_show_my_pk_button(self):
-        """
-        设置显示自己公钥的按钮
-        :return:
-        """
-        my_pk_button_frame = tkinter.Frame(self.root_tk)
-
-        my_pk_button = tkinter.Button(my_pk_button_frame,
-                                      text="查看自己的公钥", command=self._show_pk)
-        my_pk_button.grid()
-
-        my_pk_button_frame.grid(row=0, column=0)
-
-    def _show_pk(self, user="server"):
-        """
-        显示公钥窗口的内部细节实现
-        :param user:
-        :return:
-        """
-        sub_window = tkinter.Toplevel()
-
-        if user == "server":
-            pk = self.rsa_key.publickey().exportKey("PEM")
-            sub_window.title("自己的公钥")
-        else:
-            pk = self.client_rsa_pk
-            sub_window.title("客户端的公钥")
-
-        text_label = tkinter.Text(sub_window, height=8, width=67)
-        text_label.insert(tkinter.END, pk)
-        text_label.tag_add("different_tag", "2.38", "5.18")
-        text_label.tag_config("different_tag", background="yellow", foreground="red")
-        text_label.configure(state=tkinter.DISABLED)
-        text_label.grid()
-        sub_window.grid()
-
-
 
     def _connect_client(self):
         def __exchange_pk():
             self._update_state_board("开始交换公钥...", print_sep=True)
 
-            self.client_rsa_pk = self.other_sock.recv(1024)
+            self.other_rsa_pk = self.other_sock.recv(1024)
             my_rsa_pk = self.rsa_key.publickey().exportKey("PEM")
             self.other_sock.send(my_rsa_pk)
 
@@ -121,9 +62,9 @@ class Server(BasicUI):
         try:
             self.my_sock.listen(1)  # 写死了,这里只允许一个客户端连接
             self.other_sock, addr = self.my_sock.accept()
-        except:
+        except ConnectionRefusedError:
             self._update_state_board("没有发现尝试连接的客户端...")
-            return
+            return False
 
         self._update_state_board("成功连接上客户端!")
 
@@ -133,175 +74,6 @@ class Server(BasicUI):
         self.buttons["show_pk_button"].configure(state="normal")
         self.buttons["send_file_button"].configure(state="normal")
         self.buttons["receive_file_button"].configure(state="normal")
-
-    def _send_file(self):
-        def __encrypt_file():
-            # CTR模式使用: http://stackoverflow.com/questions/3154998/pycrypto-problem-using-desctr
-            counter = os.urandom(8)
-            encrypt_sir = DES.new(des_key, DES.MODE_CTR, counter=lambda: counter)
-
-            with open(file_path, "rb") as f:
-                cipher_text = encrypt_sir.encrypt(self.padding(f.read()))
-
-            return counter + cipher_text
-
-        def __encrypt_des_key(rsa_pk):
-            rsa = RSA.importKey(rsa_pk)
-            cipher_text = rsa.encrypt(des_key, rsa_pk)
-            return cipher_text
-
-        def __create_des_key(key_size):
-            return os.urandom(key_size)
-
-        def __send_encrypted_file(sock):
-            self._update_state_board("发送加密文件中...", print_sep=True)
-
-            encrypted_file = __encrypt_file()
-            file_name, file_size = os.path.basename(file_path), len(encrypted_file)
-            file_info = json.dumps((file_name, file_size)).ljust(1024)
-
-            sock.send(file_info.encode("utf8"))
-            sock.send(encrypted_file)
-            sock.recv(len(b"OK"))
-
-            self._update_state_board("发送成功!")
-
-        def __exchange_encrypted_des_key(sock):
-            self._update_state_board("开始交换加密的DES密钥...", print_sep=True)
-
-            sock.send(encrypted_des_key[0])
-            sock.recv(len(b"OK"))
-
-            self._update_state_board("交换成功!")
-
-        def __ensure_can_send_file(sock):
-            data = sock.recv(len(b"ready to receive file"))
-            if b"ready to receive file" == data:
-                sock.send(b"ready to send file")
-                return
-            else:
-                raise RuntimeError
-
-        file_path = tkinter.filedialog.askopenfilename(title="要发送的文件为?")
-        if file_path == "":
-            return
-        self._update_state_board("请确保{0}已经准备好开始接收文件...".format(self.client_name), print_sep=True)
-        try:
-            __ensure_can_send_file(self.other_sock)
-        except:
-            self._update_state_board("{0}还没准备好开始接收文件...".format(self.client_name))
-            return
-
-        des_key = __create_des_key(key_size=8)
-        encrypted_des_key = __encrypt_des_key(self.client_rsa_pk)
-        __exchange_encrypted_des_key(self.other_sock)
-        __send_encrypted_file(self.other_sock)
-
-        self.buttons["decrypt_file_button"].configure(state="disabled")
-
-    def _decrypt_file(self, encrypted_file=None):
-        def __decrypt_des_key(decrypter, encrypted_key):
-            plain_text = decrypter.decrypt(encrypted_key)
-            return plain_text
-
-        def __decrypt_encrypted_file(file_path):
-            des_key = __decrypt_des_key(self.rsa_key, self.encrypted_des_key)
-
-            with open(file_path, "rb") as f:
-                data = f.read()
-
-            counter = slice(0, 8)
-            des = DES.new(des_key, DES.MODE_CTR, counter=lambda: data[counter])
-            file_contents = des.decrypt(data[8:])
-
-            return self.un_padding(file_contents)
-
-        if encrypted_file is None:
-            # http://www.xuebuyuan.com/1918954.html
-            encrypted_file = tkinter.filedialog.askopenfilename(title="要解密的文件是?")
-            if encrypted_file == "":
-                return
-
-        file_path = tkinter.filedialog.asksaveasfilename(title="解密完的文件保存在?")
-        file_contents = __decrypt_encrypted_file(encrypted_file)
-        self._update_state_board("解密完成!", print_sep=True)
-        with open(file_path, "wb") as f:
-            f.write(file_contents)
-
-        return file_contents
-
-    def _update_state_board(self, message, print_sep=False):
-        """
-        更新状态栏
-        :param message: 传给状态栏的信息
-        :param print_sep: 是否要打印分隔符
-        :return:
-        """
-        if print_sep is True:
-            self._update_state_board("*" * 40)
-        self.state_board.configure(state="normal")
-        self.state_board.insert(tkinter.END, message + "\n")
-        self.state_board.configure(state="disabled")
-        self.state_board.see(tkinter.END)
-        self.root_tk.update()
-
-    def _receive_file(self):
-        def __exchange_encrypted_des_key(sock):
-            self._update_state_board("开始交换加密的DES密钥...", print_sep=True)
-
-            encrypted_des_key = (sock.recv(1024),)
-            sock.send(b"OK")
-
-            self._update_state_board("交换成功!")
-
-            return encrypted_des_key
-
-        def __receive_encrypted_file(client, file_path):
-            self._update_state_board("接收加密文件中...", print_sep=True)
-
-            file_name, file_size = json.loads(client.recv(1024).decode("utf8").strip())
-            with open(file_path, "wb") as f:
-                while True:
-                    data = client.recv(1024)
-                    f.write(data)
-
-                    file_size -= len(data)
-                    if file_size <= 0:
-                        break
-            client.send("OK".encode("utf8"))
-
-            self._update_state_board("接收成功!")
-
-        def __ask_decrypt_file_now(file_save_path):
-            choice = tkinter.messagebox.askyesno(
-                message="是否现在解密文件?[PS: 每次发送的文件都会使用新的DES密钥, 故需要在下次发送文件前对接收到的加密文件进行解密]")
-            if choice is True:
-                self._decrypt_file(file_save_path)
-
-        def __prepare_to_receive_file(sock):
-            sock.send(b"ready to receive file")
-            data = sock.recv(len(b"ready to send file"))
-            if b"ready to send file" == data:
-                return
-            else:
-                print(data)
-                raise RuntimeError
-
-        file_save_path = tkinter.filedialog.asksaveasfilename(title="文件保存路径为?")
-        if file_save_path == "":
-            return
-        self._update_state_board("请确保{0}已经准备好开始发送文件...".format(self.client_name), print_sep=True)
-        try:
-            __prepare_to_receive_file(self.other_sock)
-        except:
-            self._update_state_board("{0}还没准备好开始发送文件...".format(self.client_name))
-            return
-
-        self.encrypted_des_key = __exchange_encrypted_des_key(self.other_sock)
-        __receive_encrypted_file(self.other_sock, file_save_path)
-        __ask_decrypt_file_now(file_save_path)
-
-        self.buttons["decrypt_file_button"].configure(state="normal")
 
 
 def main():
