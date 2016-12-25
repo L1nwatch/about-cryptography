@@ -19,11 +19,8 @@ class Client(BasicUI):
         super().__init__()
         self.server_address = server_address
         self.other_sock = None
-        self.client_des_key = None
         self.other_name = "服务端"
         self.my_name = "客户端"
-        self.other_rsa_pk = None
-        self.rsa_key = None  # RSA 公私钥
 
     def run(self):
         self.root_tk = tkinter.Tk()

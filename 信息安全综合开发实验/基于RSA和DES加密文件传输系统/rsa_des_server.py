@@ -22,9 +22,6 @@ class Server(BasicUI):
         self.other_sock = None  # 对方的 sock
         self.other_name = "客户端"
         self.my_name = "服务端"
-        self.client_des_key = None
-        self.other_rsa_pk = None
-        self.rsa_key = None  # RSA 公私钥
 
     def run(self):
         self.root_tk = tkinter.Tk()
