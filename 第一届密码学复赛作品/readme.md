@@ -1,6 +1,8 @@
 ## 文件夹说明
 这里存放的是之前参加第一节密码学复赛的比赛作品代码, 功能是实现通信双方各自产生 1024 bits 的 RSA 公钥(e=65537), 然后通过这个公钥交换得到 AES 密钥, 并用该 AES 密钥对文件进行加密并传送.
 
+【2016-12-28更新】，重构了一份代码，在编写信息安全实验的时候发现之前写的代码果然 BUG 好多，刚好工程设计需要用到这份代码，就顺手重构了
+
 ## PS
 代码写的挺一般, 就当拿来学习 tkinter/RSA/AES 吧
 
@@ -22,7 +24,7 @@
 ### 手动解决方案：
     set TCL_LIBRARY=D:\Software\Python35\tcl\tcl8.6
     set TK_LIBRARY=D:\Software\Python35\tcl\tk8.6
-
+    
     for windows
     in your dircetory "C:\Users\g2\Envs\DataVizproj\Scripts\activate.bat"
     just add
