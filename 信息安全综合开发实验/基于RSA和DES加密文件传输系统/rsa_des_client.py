@@ -37,7 +37,7 @@ class Client(BasicUI):
 
     @staticmethod
     def create_socket():
-        socket.setdefaulttimeout(60)
+        socket.setdefaulttimeout(10)
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         return sock
 
