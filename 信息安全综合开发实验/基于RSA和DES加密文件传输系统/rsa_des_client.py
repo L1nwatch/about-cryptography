@@ -9,18 +9,18 @@
 from basic_class import BasicUI
 
 import socket
-import tkinter
+import tkinter.messagebox
 
 __author__ = '__L1n__w@tch'
 
 
 class Client(BasicUI):
-    def __init__(self, server_address=(("0.0.0.0", 8083))):
+    def __init__(self):
         super().__init__()
-        self.server_address = server_address
         self.other_sock = None
         self.other_name = "服务端"
         self.my_name = "客户端"
+        self.input_box_message = "{}地址".format(self.other_name)
 
     def run(self):
         self.root_tk = tkinter.Tk()
@@ -37,8 +37,7 @@ class Client(BasicUI):
 
     @staticmethod
     def create_socket():
-        # TODO: 这里要取消掉,改用多线程判断超时
-        socket.setdefaulttimeout(10)
+        socket.setdefaulttimeout(60)
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         return sock
 
@@ -53,12 +52,14 @@ class Client(BasicUI):
 
             self._update_state_board("交换公钥成功!")
 
-        self._update_state_board("尝试与服务端进行连接...", print_sep=True)
         try:
+            self._get_server_address_from_input_box()
+            self._update_state_board("尝试与服务端进行连接...", print_sep=True)
             self.other_sock.connect(self.server_address)
-        except (ConnectionRefusedError, OSError):
+            # self.sock_connect(self.server_address)
+        except Exception as e:
             self._update_state_board("连接失败...请确保服务端正常运行...")
-            return False
+            raise e
         self._update_state_board("成功连接上服务端!")
 
         __exchange_pk()
@@ -67,6 +68,9 @@ class Client(BasicUI):
         self.buttons["show_pk_button"].configure(state="normal")
         self.buttons["send_file_button"].configure(state="normal")
         self.buttons["receive_file_button"].configure(state="normal")
+
+    def sock_connect(self, address):
+        self.other_sock.connect(address)
 
 
 def main():

@@ -12,6 +12,9 @@ import socket
 import tkinter
 import tkinter.messagebox
 import tkinter.filedialog
+import time
+import threading
+import sys
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import DES
 
@@ -22,12 +25,15 @@ class BasicUI:
     def __init__(self):
         self.root_tk = None  # 主窗体
         self.state_board = None  # 状态栏
+        self.ip_address_box = None  # IP 地址输入栏
         self.other_sock = None  # 交互用的 sock
         self.other_name = None  # 对方的名字
         self.my_name = None  # 自己的名字
         self.other_rsa_pk = None  # 对方的公钥
         self.rsa_key = None  # 自己的公钥
         self.user_ico = None  # 头像文件
+        self.server_address = None  # 服务端的 IP 地址
+        self.input_box_message = None  # 输入框的提示信息
 
     @staticmethod
     def padding(data, size=8):
@@ -48,7 +54,6 @@ class BasicUI:
         :param size: 块的长度, 比如 16
         :return: b"ICE ICE BABY"
         """
-        # TODO: 解密不合法文件时处理
         # 抛出异常也可以用assert
         assert (len(data) % size == 0)
         padding_value = data[-1]
@@ -64,6 +69,29 @@ class BasicUI:
         """
         rsa_key = RSA.generate(1024, e=65537)
         return rsa_key
+
+    def _get_server_address_from_input_box(self):
+        """
+        通过输入窗口获取 IP 以及端口号
+        :return:
+        """
+        try:
+            ip, port = self.ip_address_box.get().split(":")
+            self.server_address = (ip, int(port))
+        except ValueError:
+            tkinter.messagebox.showerror(title="错误", message="{}地址有误, 请正确输入".format(self.other_name))
+
+    def initialize_input_box(self):
+        frame = tkinter.Frame(self.root_tk)
+
+        input_label = tkinter.Label(frame, text=self.input_box_message)
+        self.ip_address_box = tkinter.Entry(frame, width=12)
+
+        self.ip_address_box.insert(0, "0.0.0.0:8083".format(self.other_name))
+        input_label.grid(row=0, column=0)
+        self.ip_address_box.grid(row=0, column=1)
+
+        frame.grid(row=1)
 
     def initialize_state_label(self):
         """
@@ -93,6 +121,8 @@ class BasicUI:
         def __set_function_buttons(frame, name):
             buttons = dict()
 
+            buttons["show_my_button"] = tkinter.Button(frame,
+                                                       text="查看自己的公钥", command=self._show_pk)
             buttons["connect_button"] = \
                 tkinter.Button(frame, text="开始与{}通信".format(name),
                                command=self._connect_client)
@@ -109,11 +139,12 @@ class BasicUI:
                 tkinter.Button(frame, text="接收{}发送的文件".format(name),
                                command=self._receive_file, state="disabled")
 
-            buttons["connect_button"].grid(row=0, sticky=tkinter.E + tkinter.W)
-            buttons["show_pk_button"].grid(row=1, sticky=tkinter.E + tkinter.W)
-            buttons["send_file_button"].grid(row=2, sticky=tkinter.E + tkinter.W)
-            buttons["decrypt_file_button"].grid(row=3, sticky=tkinter.E + tkinter.W)
-            buttons["receive_file_button"].grid(row=4, sticky=tkinter.E + tkinter.W)
+            buttons["show_my_button"].grid(row=0, sticky=tkinter.E + tkinter.W)
+            buttons["connect_button"].grid(row=1, sticky=tkinter.E + tkinter.W)
+            buttons["show_pk_button"].grid(row=2, sticky=tkinter.E + tkinter.W)
+            buttons["send_file_button"].grid(row=3, sticky=tkinter.E + tkinter.W)
+            buttons["decrypt_file_button"].grid(row=4, sticky=tkinter.E + tkinter.W)
+            buttons["receive_file_button"].grid(row=5, sticky=tkinter.E + tkinter.W)
 
             return buttons
 
@@ -128,19 +159,6 @@ class BasicUI:
         function_frame.grid()
 
         clients_frame.grid()
-
-    def _set_show_my_pk_button(self):
-        """
-        设置显示自己公钥的按钮
-        :return:
-        """
-        my_pk_button_frame = tkinter.Frame(self.root_tk)
-
-        my_pk_button = tkinter.Button(my_pk_button_frame,
-                                      text="查看自己的公钥", command=self._show_pk)
-        my_pk_button.grid()
-
-        my_pk_button_frame.grid(row=0, column=0)
 
     def _show_pk(self, show_my_pubkey=True, other_name="对方"):
         """
@@ -246,8 +264,8 @@ class BasicUI:
         # self.root_tk.update()
 
     def initialize_buttons(self):
-        # 初始化查看自己公钥按钮
-        self._set_show_my_pk_button()
+        # 初始化输入窗口
+        self.initialize_input_box()
 
         # 用户头像文件
         self.user_ico = tkinter.PhotoImage(file="user.gif").subsample(2)
@@ -365,5 +383,5 @@ class BasicUI:
         self.buttons["decrypt_file_button"].configure(state="disabled")
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     pass
