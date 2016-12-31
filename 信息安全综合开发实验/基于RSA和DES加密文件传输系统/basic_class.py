@@ -87,7 +87,6 @@ class BasicUI:
         input_label = tkinter.Label(frame, text=self.input_box_message)
         self.ip_address_box = tkinter.Entry(frame, width=12)
 
-        self.ip_address_box.insert(0, "0.0.0.0:8083".format(self.other_name))
         input_label.grid(row=0, column=0)
         self.ip_address_box.grid(row=0, column=1)
 

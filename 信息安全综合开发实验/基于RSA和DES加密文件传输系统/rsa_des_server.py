@@ -32,6 +32,7 @@ class Server(BasicUI):
         self.initialize_root()
         self.initialize_buttons()
         self.initialize_state_label()
+        self.ip_address_box.insert(0, "0.0.0.0:8083".format(self.other_name))
 
         self._update_state_board("初始化成功...\n请点击按钮进行相应操作...")
         self.root_tk.mainloop()
@@ -60,7 +61,8 @@ class Server(BasicUI):
 
         try:
             self._get_server_address_from_input_box()
-            self.my_sock = self.create_socket()
+            if self.my_sock is None:
+                self.my_sock = self.create_socket()
             self._update_state_board("服务端准备就绪...正在监听...", print_sep=True)
             self.my_sock.listen(1)  # 写死了,这里只允许一个客户端连接
             self.other_sock, address = self.my_sock.accept()

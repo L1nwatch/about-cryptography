@@ -31,6 +31,7 @@ class Client(BasicUI):
         self.initialize_root()
         self.initialize_buttons()
         self.initialize_state_label()
+        self.ip_address_box.insert(0, "127.0.0.1:8083".format(self.other_name))
 
         self._update_state_board("初始化成功...\n请点击按钮进行相应操作...")
         self.root_tk.mainloop()
